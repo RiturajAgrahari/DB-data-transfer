@@ -24,9 +24,9 @@ def open_database():
 def get_query():
     mydb = open_database()
     my_cursor = mydb.cursor()
-    my_cursor.execute(f"SELECT * FROM bot_info;")
+    my_cursor.execute(f"SELECT * FROM profile;")
     output = my_cursor.fetchall()
-    print("MYSQL - [ bot_info ] ALL DATA:")
+    print("MYSQL - [ profile ] ALL DATA:")
     print(output)
     print(f"-----------------------------")
     mydb.close()

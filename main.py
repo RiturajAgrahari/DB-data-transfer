@@ -1,5 +1,5 @@
 from pg import db_init
-from models import BotUsage
+from models import Profile
 import asyncio
 from mydb import get_query
 
@@ -7,15 +7,15 @@ from mydb import get_query
 async def main():
     output = get_query()
     await db_init()
-    new_usage = await BotUsage.all().values()
+    new_usage = await Profile.all().values()
     print(new_usage)
-    await BotUsage.all().delete()
+    await Profile.all().delete()
     id = 0
     for row in output:
         id = row[0]
         print(f"Inserting id : {id} in postgres....", end=" --> ")
         try:
-            usage = BotUsage(id=row[0], date=row[1], fandom_bot=row[2], lucky_bot=row[3], rpg_bot=row[4])
+            usage = Profile(id=row[0], discord_name=row[1], discord_id=row[2], bot_used=row[3])
             await usage.save()
         except Exception as e:
             print(f"[ EXCEPTION ] at id : {id} :")
@@ -28,12 +28,11 @@ async def main():
         id += 1
         print(f"Inserting id : {id} in postgres....", end=" --> ")
         try:
-            usage = BotUsage(
+            usage = Profile(
                 id=id,
-                date=new_data["date"],
-                fandom_bot=new_data["fandom_bot"],
-                lucky_bot=new_data["lucky_bot"],
-                rpg_bot=new_data["rpg_bot"]
+                discord_name=new_data["discord_name"],
+                discord_id=new_data["discord_id"],
+                bot_used=new_data["bot_used"],
             )
             await usage.save()
         except Exception as e:
@@ -46,6 +45,7 @@ async def main():
 if __name__ == "__main__":
     asyncio.run(main())
 
+# Botusage DONE
 
 """
  id |    date    | fandom_bot | lucky_bot | rpg_bot 
