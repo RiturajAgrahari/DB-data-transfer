@@ -11,12 +11,14 @@ async def main():
     print(new_usage)
     await Profile.all().delete()
     id = 0
+    existing_record = []
     for row in output:
         id = row[0]
         print(f"Inserting id : {id} in postgres....", end=" --> ")
         try:
             usage = Profile(id=row[0], discord_name=row[1], discord_id=row[2], bot_used=row[3])
             await usage.save()
+            existing_record.append(row[2])
         except Exception as e:
             print(f"[ EXCEPTION ] at id : {id} :")
             print(e)
@@ -25,21 +27,24 @@ async def main():
 
     print("NEW DATA STARTED INSERTING:...")
     for new_data in new_usage:
-        id += 1
-        print(f"Inserting id : {id} in postgres....", end=" --> ")
-        try:
-            usage = Profile(
-                id=id,
-                discord_name=new_data["discord_name"],
-                discord_id=new_data["discord_id"],
-                bot_used=new_data["bot_used"],
-            )
-            await usage.save()
-        except Exception as e:
-            print(f"[ EXCEPTION ] at id : {id} :")
-            print(e)
-            print("-------------")
-        print("Insertion complete!")
+        if new_data["discord_id"] not in existing_record:
+            id += 1
+            print(f"Inserting id : {id} in postgres....", end=" --> ")
+            try:
+                usage = Profile(
+                    id=id,
+                    discord_name=new_data["discord_name"],
+                    discord_id=new_data["discord_id"],
+                    bot_used=new_data["bot_used"],
+                )
+                await usage.save()
+            except Exception as e:
+                print(f"[ EXCEPTION ] at id : {id} :")
+                print(e)
+                print("-------------")
+            print("Insertion complete!")
+        else:
+            print(f"Existing id : {id} in postgres....")
 
 
 if __name__ == "__main__":
